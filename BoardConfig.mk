@@ -54,8 +54,7 @@ TARGET_KERNEL_CONFIG := cancro_user_defconfig
 
 # Vendor Init
 TARGET_UNIFIED_DEVICE := true
-TARGET_INIT_VENDOR_LIB := libinit_msm
-TARGET_LIBINIT_DEFINES_FILE := $(CANCRO_PATH)/init/init_cancro.c
+TARGET_INIT_VENDOR_LIB := libinit_cancro
 
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true
@@ -182,23 +181,10 @@ COMMON_GLOBAL_CFLAGS += -DNO_SECURE_DISCARD
 # Simple time service client
 BOARD_USES_QC_TIME_SERVICES := true
 
-# Logging
-TARGET_USES_LOGD := false
-
 # Charger
 BOARD_CHARGER_ENABLE_SUSPEND := true
 
 BOARD_HAS_NO_SELECT_BUTTON := true
-
-# Enable dex-preoptimization to speed up first boot sequence
-ifeq ($(HOST_OS),linux)
-  ifeq ($(TARGET_BUILD_VARIANT),user)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-    endif
-  endif
-endif
-DONT_DEXPREOPT_PREBUILTS := true
 
 # SELinux policies
 # qcom sepolicy
