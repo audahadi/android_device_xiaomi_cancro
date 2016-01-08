@@ -42,11 +42,12 @@ USE_CLANG_PLATFORM_BUILD := true
 # Flags
 COMMON_GLOBAL_CFLAGS += -D__ARM_USE_PLD -D__ARM_CACHE_LINE_SIZE=64
 
-# Kernel
+# kernel 
+BOARD_CUSTOM_BOOTIMG_MK := $(CANCRO_PATH)/mkbootimg.mk
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := arm-eabi-
 BOARD_KERNEL_CMDLINE := console=none vmalloc=340M androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 androidboot.selinux=permissive
 BOARD_KERNEL_SEPARATED_DT := true
-BOARD_DTBTOOL_ARGS := -2
+#BOARD_DTBTOOL_ARGS := -2
 BOARD_KERNEL_BASE        := 0x00000000
 BOARD_KERNEL_PAGESIZE    := 2048
 BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02000000 --tags_offset 0x01E00000
