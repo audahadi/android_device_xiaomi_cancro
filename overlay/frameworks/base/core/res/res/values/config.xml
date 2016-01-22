@@ -23,7 +23,6 @@
     <bool name="config_wifi_batched_scan_supported">false</bool>
     <bool name="config_automatic_brightness_available">true</bool>
     <bool name="config_unplugTurnsOnScreen">true</bool>
-    <bool name="config_animateScreenLights">false</bool>
     <bool name="config_disableMenuKeyInLockScreen">true</bool>
     <bool name="config_dreamsSupported">true</bool>
     <bool name="config_dreamsEnabledByDefault">false</bool>
