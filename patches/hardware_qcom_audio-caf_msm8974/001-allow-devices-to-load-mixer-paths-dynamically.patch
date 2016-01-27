@@ -1,0 +1,92 @@
+From 2da3b739211471973e0b39ed83d2c7ad31651202
+From: rooque <victor.rooque@gmail.com>
+Date:   Thu Sep 17 15:56:27 2015 -0300
+
+Subject: Allow devices to load mixer paths dynamically
+
+diff --git a/hal/Android.mk b/hal/Android.mk
+index 3d50a25..a089ede 100644
+--- a/hal/Android.mk
++++ b/hal/Android.mk
+@@ -212,6 +212,10 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_HWDEP_CAL)),true)
+     LOCAL_CFLAGS += -DHWDEP_CAL_ENABLED
+ endif
+ 
++ifeq ($(strip $(AUDIO_FEATURE_DYNAMIC_MIXER_PATHS)),true)
++  LOCAL_CFLAGS += -DDYNAMIC_MIXER_PATHS
++endif
++
+ LOCAL_COPY_HEADERS_TO   := mm-audio
+ LOCAL_COPY_HEADERS      := audio_extn/audio_defs.h
+ 
+diff --git a/hal/msm8974/platform.c b/hal/msm8974/platform.c
+index 0d56ff7..eb5edc4 100644
+--- a/hal/msm8974/platform.c
++++ b/hal/msm8974/platform.c
+@@ -40,9 +40,16 @@
+ 
+ #define SOUND_TRIGGER_DEVICE_HANDSET_MONO_LOW_POWER_ACDB_ID (100)
+ 
++#ifndef DYNAMIC_MIXER_PATHS
+ #define MIXER_XML_PATH "/system/etc/mixer_paths.xml"
+ #define MIXER_XML_PATH_AUXPCM "/system/etc/mixer_paths_auxpcm.xml"
+ #define MIXER_XML_PATH_WCD9330 "/system/etc/mixer_paths_wcd9330.xml"
++#else
++#define MIXER_XML_PATH_PREFIX "/system/etc/"
++#define MIXER_PATH_DEF "mixer_paths.xml"
++#define MIXER_PATH_AUX_DEF "mixer_paths_auxpcm.xml"
++#endif
++
+ #define LIB_ACDB_LOADER "libacdbloader.so"
+ #define AUDIO_DATA_BLOCK_MIXER_CTL "HDMI EDID"
+ 
+@@ -841,6 +848,10 @@ void *platform_init(struct audio_device *adev)
+     struct platform_data *my_data = NULL;
+     int retry_num = 0, snd_card_num = 0;
+     const char *snd_card_name;
++#ifdef DYNAMIC_MIXER_PATHS
++    char d_mixer_paths_xml[sizeof(MIXER_XML_PATH_PREFIX) + PROPERTY_VALUE_MAX];
++    char d_mixer_paths_aux_xml[sizeof(MIXER_XML_PATH_PREFIX) + PROPERTY_VALUE_MAX];
++#endif
+ 
+     my_data = calloc(1, sizeof(struct platform_data));
+ 
+@@ -867,12 +878,13 @@ void *platform_init(struct audio_device *adev)
+         }
+ 
+         snd_card_name = mixer_get_name(adev->mixer);
+-        ALOGD("%s: snd_card_name: %s", __func__, snd_card_name);
++        ALOGV("%s: snd_card_name: %s", __func__, snd_card_name);
+ 
+         my_data->hw_info = hw_info_init(snd_card_name);
+         if (!my_data->hw_info) {
+             ALOGE("%s: Failed to init hardware info", __func__);
+         } else {
++#ifndef DYNAMIC_MIXER_PATHS
+             if (!strncmp(snd_card_name, "msm8226-tomtom-snd-card",
+                          sizeof("msm8226-tomtom-snd-card"))) {
+                 ALOGE("%s: Call MIXER_XML_PATH_WCD9330", __func__);
+@@ -883,6 +895,23 @@ void *platform_init(struct audio_device *adev)
+                                     MIXER_XML_PATH_AUXPCM) == -ENOSYS)
+                 adev->audio_route = audio_route_init(snd_card_num,
+                                                  MIXER_XML_PATH);
++#else
++            strcpy(d_mixer_paths_xml, MIXER_XML_PATH_PREFIX);
++            property_get("audio.mixer_paths.config",
++                              d_mixer_paths_xml + sizeof(MIXER_XML_PATH_PREFIX) - 1, MIXER_PATH_DEF);
++
++            strcpy(d_mixer_paths_aux_xml, MIXER_XML_PATH_PREFIX);
++            property_get("audio.mixer_paths_aux.config",
++                              d_mixer_paths_aux_xml + sizeof(MIXER_XML_PATH_PREFIX) - 1, MIXER_PATH_AUX_DEF);
++
++            ALOGV("%s: mixer path: %s", __func__, d_mixer_paths_xml);
++            ALOGV("%s: mixer path aux: %s", __func__, d_mixer_paths_aux_xml);
++
++            if (audio_extn_read_xml(adev, snd_card_num, d_mixer_paths_xml,
++                                    d_mixer_paths_aux_xml) == -ENOSYS)
++                adev->audio_route = audio_route_init(snd_card_num,
++                                                 d_mixer_paths_xml);
++#endif
+             if (!adev->audio_route) {
+                 ALOGE("%s: Failed to init audio route controls, aborting.",
+                        __func__);

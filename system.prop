@@ -19,13 +19,21 @@ ro.qc.sdk.camera.facialproc=false
 ro.sf.lcd_density=480
 
 # Audio
+persist.speaker.prot.enable=true
+qcom.hw.aac.encoder=false
+tunnel.audio.encode=false
+persist.audio.init_volume_index=1
+audio.offload.buffer.size.kb=32
+audio.offload.video=true
+audio.offload.gapless.enabled=false
+audio.offload.disable=0
+media.aac_51_output_enabled=true
 ro.qc.sdk.audio.ssr=false
 ro.qc.sdk.audio.fluencetype=fluence
 persist.audio.fluence.voicecall=true
-persist.audio.fluence.voicerec=true
-persist.audio.fluence.speaker=false
-audio.offload.video=false
-use.voice.path.for.pcm.voip=true
+persist.audio.fluence.voicerec=false
+persist.audio.fluence.speaker=true
+audio.offload.pcm.enable=true
 
 # Media
 media.stagefright.enable-player=true

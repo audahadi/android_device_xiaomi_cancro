@@ -40,7 +40,22 @@
 
 #define RAW_ID_PATH     "/sys/devices/system/soc/soc0/raw_id"
 #define BUF_SIZE         64
+
+#define BOOTINFO_PATH   "/sys/bootinfo/hw_version"
+
+#define HW_MAJOR_VERSION_SHIFT 4
+#define HW_MAJOR_VERSION_MASK  0xF0
+#define HW_MINOR_VERSION_SHIFT 0
+#define HW_MINOR_VERSION_MASK  0x0F
+
 static char tmp[BUF_SIZE];
+static char buff_tmp[BUF_SIZE];
+
+const char *mixer_paths_prefix = "/system/etc/";
+const char *v3_mixer_paths = "mixer_paths_3_x.xml";
+const char *v4_mixer_paths = "mixer_paths_4_x.xml";
+const char *v5_mixer_paths = "mixer_paths_5_x.xml";
+const char *def_mixer_paths = "mixer_paths.xml";
 
 static int read_file2(const char *fname, char *data, int max_size)
 {
@@ -65,6 +80,61 @@ static int read_file2(const char *fname, char *data, int max_size)
     return 1;
 }
 
+unsigned long get_hw_version(){
+    int rc = 0;
+    unsigned long hw_ul;
+
+    rc = read_file2(BOOTINFO_PATH, buff_tmp, sizeof(buff_tmp));
+    if(rc) {
+        hw_ul = strtoul(buff_tmp, NULL, 0);
+        return hw_ul;    
+    } else {
+        return 75;
+    }
+    
+}
+
+unsigned long get_hw_version_major() {
+	return ((get_hw_version() & HW_MAJOR_VERSION_MASK) >> HW_MAJOR_VERSION_SHIFT);
+}
+
+unsigned long get_hw_version_minor() {
+	return ((get_hw_version() & HW_MINOR_VERSION_MASK) >> HW_MINOR_VERSION_SHIFT);
+}
+
+unsigned long real_hw_version() {
+        return ((get_hw_version_major() * 10) + get_hw_version_minor());
+}
+
+const char *get_mixer_paths()
+{
+    unsigned long hw_major,hw_minor;
+    const char *tmp_mixer_paths;
+
+    hw_major = get_hw_version_major();
+    hw_minor = get_hw_version_minor();
+
+    if(hw_major == 3){
+
+        tmp_mixer_paths = v3_mixer_paths;
+
+    } else if (hw_major == 4) {
+
+        tmp_mixer_paths = v4_mixer_paths;
+
+    } else if (hw_major == 5) {
+
+        tmp_mixer_paths = v5_mixer_paths;
+
+    } else {
+
+       tmp_mixer_paths = def_mixer_paths;
+
+    }
+
+    return tmp_mixer_paths;
+}
+
 void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *board_type)
 {
     int rc;
@@ -73,6 +143,15 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
     UNUSED(msm_id);
     UNUSED(msm_ver);
     UNUSED(board_type);
+
+    /* set ro.hwversion */
+    const int hwv_len = snprintf(NULL, 0, "%lu", real_hw_version());
+    char hwv_buff [hwv_len + 1];
+    snprintf(hwv_buff, hwv_len + 1, "%lu", real_hw_version());
+    property_set("ro.hwversion", hwv_buff);
+
+    /* set mixer paths props */
+    property_set("audio.mixer_paths.config", (char*) get_mixer_paths());
 
     /* get raw ID */
     rc = read_file2(RAW_ID_PATH, tmp, sizeof(tmp));
@@ -83,22 +162,22 @@ void init_msm_properties(unsigned long msm_id, unsigned long msm_ver, char *boar
     /* MI 3W  */
     if (raw_id==1978) {
         property_set("ro.product.model", "MI 3W");
+        property_set("ro.product.device", "cancro");
+        property_set("ro.product.name", "cancro");
     } else
 
     /* MI 4W  */
     if (raw_id==1974) {
         property_set("ro.product.model", "MI 4W");
-        property_set("ro.telephony.default_network", "10");
-        property_set("ro.ril.def.preferred.network", "10");
-        property_set("telephony.lteOnGSMDevice", "1");
+        property_set("ro.product.device", "cancro");
+        property_set("ro.product.name", "cancro");
     } else
 
     /* MI 4LTE-CU  */
     if (raw_id==1972) {
         property_set("ro.product.model", "MI 4LTE");
+        property_set("ro.product.device", "cancro");
         property_set("ro.product.name", "cancro_wc_lte");
-        property_set("ro.telephony.default_network", "8");
-        property_set("telephony.lteOnGSMDevice", "1");
     }
 
     /* ??? */
