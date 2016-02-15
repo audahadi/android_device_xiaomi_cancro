@@ -151,6 +151,9 @@ on property:persist.usb.chgdisabled=1
 on property:persist.usb.chgdisabled=0
     write /sys/class/power_supply/battery/charging_enabled 1
 
+    exec /system/bin/sh  /system/bin/set_sensorprop.sh
+    class_start core
+
 # NFC
    setprop ro.nfc.port "I2C"
     chmod 0600 /dev/bcm2079x

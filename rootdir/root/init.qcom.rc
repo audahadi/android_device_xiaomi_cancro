@@ -546,6 +546,12 @@ service sensors /system/bin/sensors.qcom
     user root
     group root
 
+service sensorservice /system/bin/sensorservice
+    class main
+    user root
+    group root
+    disabled
+
 on property:ro.use_data_netmgrd=false
     # netmgr not supported on specific target
     stop netmgrd
@@ -871,16 +877,3 @@ on property:persist.radio.modem=LTE-CU
     setprop persist.radio.data_no_toggle 1
     setprop persist.fd.scroff.timer 3000
     setprop persist.fd.scron.timer 10000
-
-
-service sensorext /system/bin/sensorextd
-    class late_start
-    user root
-    group root
-    disabled
-
-service sensorservice /system/bin/sensorservice
-    class late_start
-    user root
-    group root
-    disabled
