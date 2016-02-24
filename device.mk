@@ -13,7 +13,7 @@ PRODUCT_AAPT_CONFIG := normal hdpi xhdpi xxhdpi
 PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 
 TARGET_USES_QCOM_BSP := true
-TARGET_USES_QCA_NFC := true
+TARGET_USES_QCA_NFC := other
 
 ifeq ($(TARGET_USES_QCOM_BSP), true)
 # Add QC Video Enhancements flag
@@ -22,9 +22,9 @@ endif #TARGET_USES_QCOM_BSP
 
 # media_profiles and media_codecs xmls for 8974
 ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS), true)
-PRODUCT_COPY_FILES += device/xiaomi/cancro/media/media_profiles_8974.xml:system/etc/media_profiles.xml \
-                      device/xiaomi/cancro/media/media_codecs_8974.xml:system/etc/media_codecs.xml \
-                      device/xiaomi/cancro/media/media_codecs_performance_8974.xml:system/etc/media_codecs_performance.xml
+PRODUCT_COPY_FILES += $(LOCAL_PATH)/media/media_profiles_8974.xml:system/etc/media_profiles.xml \
+                      $(LOCAL_PATH)/media/media_codecs_8974.xml:system/etc/media_codecs.xml \
+                      $(LOCAL_PATH)/media/media_codecs_performance_8974.xml:system/etc/media_codecs_performance.xml
 endif  #TARGET_ENABLE_QC_AV_ENHANCEMENTS
 
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -33,10 +33,20 @@ $(call inherit-product, device/qcom/common/common.mk)
 
 # Audio configuration file
 PRODUCT_COPY_FILES += \
-    device/xiaomi/cancro/audio_policy.conf:system/etc/audio_policy.conf \
-    device/xiaomi/cancro/audio_effects.conf:system/vendor/etc/audio_effects.conf \
-    device/xiaomi/cancro/mixer_paths.xml:system/etc/mixer_paths.xml \
-    device/xiaomi/cancro/mixer_paths_auxpcm.xml:system/etc/mixer_paths_auxpcm.xml
+    $(LOCAL_PATH)/audio_policy.conf:system/etc/audio_policy.conf \
+    $(LOCAL_PATH)/audio_effects.conf:system/vendor/etc/audio_effects.conf \
+    $(LOCAL_PATH)/mixer_paths.xml:system/etc/mixer_paths.xml \
+    $(LOCAL_PATH)/mixer_paths_auxpcm.xml:system/etc/mixer_paths_auxpcm.xml
+
+# Audio calibration data
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Bluetooth_cal.acdb:system/etc/acdbdata/MTP/MTP_Bluetooth_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_General_cal.acdb:system/etc/acdbdata/MTP/MTP_General_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Global_cal.acdb:system/etc/acdbdata/MTP/MTP_Global_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Handset_cal.acdb:system/etc/acdbdata/MTP/MTP_Handset_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Hdmi_cal.acdb:system/etc/acdbdata/MTP/MTP_Hdmi_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Headset_cal.acdb:system/etc/acdbdata/MTP/MTP_Headset_cal.acdb \
+    $(LOCAL_PATH)/audio/acdb/MTP/MTP_Speaker_cal.acdb:system/etc/acdbdata/MTP/MTP_Speaker_cal.acdb
 
 
 PRODUCT_PACKAGES += \
@@ -66,8 +76,7 @@ PRODUCT_PACKAGES += \
 
 #fstab.qcom
 PRODUCT_PACKAGES += \
-    fstab.qcom \
-    init.rc
+    fstab.qcom
 
 #wlan driver
 PRODUCT_COPY_FILES += \
@@ -110,11 +119,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.service.debuggable=1 \
     persist.sys.usb.config=mtp,adb \
     ro.build.selinux=1 \
-    ro.sf.lcd_density=480 \
     ro.secure=0
 
 PRODUCT_COPY_FILES += \
-    device/xiaomi/cancro/whitelist_appops.xml:system/etc/whitelist_appops.xml
+    $(LOCAL_PATH)/whitelist_appops.xml:system/etc/whitelist_appops.xml
 
 # NFC packages
 ifeq ($(TARGET_USES_QCA_NFC),true)

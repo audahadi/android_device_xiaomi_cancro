@@ -155,7 +155,7 @@ WIFI_DRIVER_FW_PATH_AP           := "ap"
 TARGET_INIT_VENDOR_LIB := libinit_msm
 TARGET_RECOVERY_UPDATER_LIBS := librecovery_updater_msm
 
-TARGET_LDPRELOAD := libNimsWrap.so
+#TARGET_LDPRELOAD := libNimsWrap.so
 
 # Control flag between KM versions
 TARGET_HW_KEYMASTER_V03 := true
