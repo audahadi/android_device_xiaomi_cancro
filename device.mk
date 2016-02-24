@@ -76,7 +76,8 @@ PRODUCT_PACKAGES += \
 
 #fstab.qcom
 PRODUCT_PACKAGES += \
-    fstab.qcom
+    fstab.qcom \
+    init.recovery.hardware
 
 #wlan driver
 PRODUCT_COPY_FILES += \
