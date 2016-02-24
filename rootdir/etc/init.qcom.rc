@@ -492,6 +492,12 @@ service sensors /system/bin/sensors.qcom
     group root
     disabled
 
+service sensorservice /system/bin/sensorservice
+    class late_start
+    user root
+    group root
+    disabled
+
 on property:ro.use_data_netmgrd=false
     # netmgr not supported on specific target
     stop netmgrd

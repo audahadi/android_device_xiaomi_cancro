@@ -38,13 +38,20 @@ fi
 start_sensors()
 {
     if [ -c /dev/msm_dsps -o -c /dev/sensors ]; then
-        chmod -h 775 /persist/sensors
-        chmod -h 664 /persist/sensors/sensors_settings
-        chown -h system.root /persist/sensors/sensors_settings
-
         mkdir -p /data/misc/sensors
         chmod -h 775 /data/misc/sensors
+        mkdir -p /persist/misc/sensors
+        chmod 775 /persist/misc/sensors
 
+        touch /persist/misc/sensors/settings
+        chmod -h 664 /data/system/sensors/settings
+        chown -h system /persist/misc/sensors/settings
+
+        if [ ! -s /persist/misc/sensors/settings ]; then
+            # If the settings file is empty, enable sensors HAL
+            # Otherwise leave the file with it's current contents
+            echo 1 > /persist/misc/sensors/settings
+        fi
         start sensors
     fi
 }
@@ -100,7 +107,70 @@ case "$baseband" in
         ;;
 esac
 
-start_sensors
+# start sensor related operation when the device is not X5
+if [ $(getprop ro.boot.hwversion | grep -e 5[0-9]) ]; then
+    /system/bin/log -p e -t "SensorSelect" "Device is X5, not call 'start_sensors'"
+else
+    /system/bin/log -p e -t "SensorSelect" "Device is not X5, call 'start_sensors'"
+    start_sensors
+fi
+
+if [ $(getprop ro.boot.hwversion | grep -e 4[0-9]) ]; then
+    echo 20 > /sys/class/leds/button-backlight/max_brightness
+    echo 20 > /sys/class/leds/button-backlight1/max_brightness
+fi
+
+leftvalue=`getprop permanent.button.bl.leftvalue`
+rightvalue=`getprop permanent.button.bl.rightvalue`
+
+# update the brightness to meet the requirement from HW
+if [ $(getprop ro.boot.hwversion | grep -e 5[0-9]) ]; then
+	if [ "$leftvalue" = "" ]; then
+		echo 15 > /sys/class/leds/button-backlight1/max_brightness
+	else
+		echo $leftvalue > /sys/class/leds/button-backlight1/max_brightness
+	fi
+	if [ "$rightvalue" = "" ]; then
+		echo 9 > /sys/class/leds/button-backlight/max_brightness
+	else
+		echo $rightvalue > /sys/class/leds/button-backlight/max_brightness
+	fi
+fi
+
+# Update the panel color property
+if [ $(getprop ro.boot.hwversion | grep -e 5[0-9]) ]; then
+    if [ -f /sys/bus/i2c/devices/2-004c/panel_color ]; then
+        # Atmel
+        color=`cat /sys/bus/i2c/devices/2-004c/panel_color`
+    elif [ -d /sys/bus/i2c/devices/2-0020/input ]; then
+        # Synaptics
+        syna_folder=`ls /sys/bus/i2c/devices/2-0020/input/ | grep -e ^input`
+        if [ -f /sys/bus/i2c/devices/2-0020/input/$syna_folder/panelcolor ]; then
+            color=`cat /sys/bus/i2c/devices/2-0020/input/$syna_folder/panelcolor`
+        fi
+    else
+        color="0"
+    fi
+
+    case "$color" in
+        "1")
+            setprop sys.panel.color WHITE
+            echo WHITE
+            ;;
+        "2")
+            setprop sys.panel.color BLACK
+            echo BLACK
+            ;;
+        "6")
+            setprop sys.panel.color PINK
+            echo PINK
+            ;;
+        *)
+            setprop sys.panel.color UNKNOWN
+            echo UNKNOWN
+            ;;
+    esac
+fi
 
 case "$target" in
     "msm7630_surf" | "msm7630_1x" | "msm7630_fusion")

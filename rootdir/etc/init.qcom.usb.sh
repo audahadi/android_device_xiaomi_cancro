@@ -30,63 +30,30 @@
 chown -h root.system /sys/devices/platform/msm_hsusb/gadget/wakeup
 chmod -h 220 /sys/devices/platform/msm_hsusb/gadget/wakeup
 
-#
-# Allow persistent usb charging disabling
-# User needs to set usb charging disabled in persist.usb.chgdisabled
-#
 target=`getprop ro.board.platform`
-usbchgdisabled=`getprop persist.usb.chgdisabled`
-case "$usbchgdisabled" in
-    "") ;; #Do nothing here
-    * )
-    case $target in
-        "msm8660")
-        echo "$usbchgdisabled" > /sys/module/pmic8058_charger/parameters/disabled
-        echo "$usbchgdisabled" > /sys/module/smb137b/parameters/disabled
-	;;
-        "msm8960")
-        echo "$usbchgdisabled" > /sys/module/pm8921_charger/parameters/disabled
-	;;
-    esac
-esac
+build_type=`getprop ro.build.type`
 
-usbcurrentlimit=`getprop persist.usb.currentlimit`
-case "$usbcurrentlimit" in
-    "") ;; #Do nothing here
-    * )
-    case $target in
-        "msm8960")
-        echo "$usbcurrentlimit" > /sys/module/pm8921_charger/parameters/usb_max_current
-	;;
-    esac
-esac
 #
 # Allow USB enumeration with default PID/VID
 #
 baseband=`getprop ro.baseband`
+debuggable=`getprop ro.debuggable`
 echo 1  > /sys/class/android_usb/f_mass_storage/lun/nofua
 usb_config=`getprop persist.sys.usb.config`
 case "$usb_config" in
-    "" | "adb") #USB persist config not set, select default configuration
-      case "$baseband" in
-          "mdm")
-               setprop persist.sys.usb.config diag,diag_mdm,serial_hsic,serial_tty,rmnet_hsic,mass_storage,adb
-          ;;
-          "sglte")
-               setprop persist.sys.usb.config diag,diag_qsc,serial_smd,serial_tty,serial_hsuart,rmnet_hsuart,mass_storage,adb
-          ;;
-          "dsda" | "sglte2")
-               setprop persist.sys.usb.config diag,diag_mdm,diag_qsc,serial_hsic,serial_hsuart,rmnet_hsic,rmnet_hsuart,mass_storage,adb
-          ;;
-          "dsda2")
-               setprop persist.sys.usb.config diag,diag_mdm,diag_mdm2,serial_hsic,serial_hsusb,rmnet_hsic,rmnet_hsusb,mass_storage,adb
-          ;;
-          *)
-               setprop persist.sys.usb.config diag,serial_smd,serial_tty,rmnet_bam,mass_storage,adb
-          ;;
-      esac
+    "" | "adb" | "none") #USB persist config not set, select default configuration
+        case $target in
+            "msm8960" | "msm8974" | "msm8226" | "msm8610" | "apq8084")
+                         if [ -z "$debuggable" -o "$debuggable" = "1" ]; then
+                             setprop persist.sys.usb.config mtp,adb
+                         else
+                             setprop persist.sys.usb.config mtp
+                         fi
+            ;;
+        esac
     ;;
-    * ) ;; #USB persist config exists, do nothing
+    * )
+    ;; #USB persist config exists, do nothing
 esac
 
 #
@@ -130,50 +97,6 @@ case "$target" in
          fi
     ;;
 esac
-
-#
-# set module params for embedded rmnet devices
-#
-rmnetmux=`getprop persist.rmnet.mux`
-case "$baseband" in
-    "mdm" | "dsda" | "sglte2")
-        case "$rmnetmux" in
-            "enabled")
-                    echo 1 > /sys/module/rmnet_usb/parameters/mux_enabled
-                    echo 8 > /sys/module/rmnet_usb/parameters/no_fwd_rmnet_links
-                    echo 17 > /sys/module/rmnet_usb/parameters/no_rmnet_insts_per_dev
-            ;;
-        esac
-        echo 1 > /sys/module/rmnet_usb/parameters/rmnet_data_init
-        # Allow QMUX daemon to assign port open wait time
-        chown -h radio.radio /sys/devices/virtual/hsicctl/hsicctl0/modem_wait
-    ;;
-    "dsda2")
-          echo 2 > /sys/module/rmnet_usb/parameters/no_rmnet_devs
-          echo hsicctl,hsusbctl > /sys/module/rmnet_usb/parameters/rmnet_dev_names
-          case "$rmnetmux" in
-               "enabled") #mux is neabled on both mdms
-                      echo 3 > /sys/module/rmnet_usb/parameters/mux_enabled
-                      echo 8 > /sys/module/rmnet_usb/parameters/no_fwd_rmnet_links
-                      echo 17 > write /sys/module/rmnet_usb/parameters/no_rmnet_insts_per_dev
-               ;;
-               "enabled_hsic") #mux is enabled on hsic mdm
-                      echo 1 > /sys/module/rmnet_usb/parameters/mux_enabled
-                      echo 8 > /sys/module/rmnet_usb/parameters/no_fwd_rmnet_links
-                      echo 17 > /sys/module/rmnet_usb/parameters/no_rmnet_insts_per_dev
-               ;;
-               "enabled_hsusb") #mux is enabled on hsusb mdm
-                      echo 2 > /sys/module/rmnet_usb/parameters/mux_enabled
-                      echo 8 > /sys/module/rmnet_usb/parameters/no_fwd_rmnet_links
-                      echo 17 > /sys/module/rmnet_usb/parameters/no_rmnet_insts_per_dev
-               ;;
-          esac
-          echo 1 > /sys/module/rmnet_usb/parameters/rmnet_data_init
-          # Allow QMUX daemon to assign port open wait time
-          chown -h radio.radio /sys/devices/virtual/hsicctl/hsicctl0/modem_wait
-    ;;
-esac
-
 
 #
 # Add changes to support diag with rndis

@@ -345,9 +345,3 @@ service ml_daemon /system/bin/ml_daemon
     class core
     user root
     group root
-
-service sensorservice /system/bin/sensorservice
-    class main
-    user root
-    group root
-    disabled
