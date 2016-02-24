@@ -1,5 +1,4 @@
-#
-# system.prop for msm8974
+# system.prop for cancro
 #
 
 rild.libpath=/vendor/lib/libril-qc-qmi-1.so
@@ -13,7 +12,9 @@ persist.rild.nitz_short_ons_0=
 persist.rild.nitz_short_ons_1=
 persist.rild.nitz_short_ons_2=
 persist.rild.nitz_short_ons_3=
-ril.subscription.types=NV,RUIM
+ril.subscription.types=RUIM
+persist.sys.ssr.restart_level=3
+persist.radio.ramdump_sdcard=1
 DEVICE_PROVISIONED=1
 # Start in global mode
 ro.telephony.default_network=10
@@ -27,6 +28,7 @@ debug.mdpcomp.logs=0
 dalvik.vm.heapsize=36m
 dev.pm.dyn_samplingrate=1
 persist.demo.hdmirotationlock=false
+ro.sf.lcd_density=480
 
 ro.hdmi.enable=true
 persist.speaker.prot.enable=false
@@ -80,6 +82,7 @@ ro.qualcomm.cabl=1
 # System props for telephony
 # System prop to turn on CdmaLTEPhone always
 telephony.lteOnCdmaDevice=1
+ro.telephony.default_cdma_sub=0
 
 #
 # System props for bluetooth
@@ -140,3 +143,32 @@ ro.hwui.text_large_cache_height=1024
 
 #disable dsp gapless mode by default
 audio.offload.gapless.enabled=false
+
+# button jack mode & switch
+persist.sys.button_jack_profile=volume
+persist.sys.button_jack_switch=0
+
+# media button for headset hook
+persist.sys.button_headset_hook=media
+
+# Enable manual network selection function and distinguish 2G/3G/4G
+persist.radio.rat_on=combine
+
+# Enalbe modem fast dormancy function
+persist.env.fastdorm.enabled=true
+persist.data.tcp_rst_drop=true
+persist.radio.data_no_toggle=1
+persist.fd.scroff.timer=3000
+persist.fd.scron.timer=10000
+
+#For specail cdma card sms issue
+persist.radio.force_on_dc=true
+
+#Qcril ignore service domain camped status for 5 senconds.
+persist.radio.ignore_dom_time=5
+#disable audio offload mode
+audio.offload.disable=1
+audio.offload.pcm.enable=false
+
+#Use Qcril DB for emergency numbers
+persist.radio.custom_ecc=1

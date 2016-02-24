@@ -1,13 +1,24 @@
+# call the proprietary setup
+$(call inherit-product, vendor/xiaomi/cancro/cancro-vendor.mk)
+
+DEVICE_PACKAGE_OVERLAYS += device/xiaomi/cancro/overlay
+
+LOCAL_PATH := device/xiaomi/cancro
+
+# This device is xxhdpi.  However the platform doesn't
+# currently contain all of the bitmaps at xxhdpi density so
+# we do this little trick to fall back to the xhdpi version
+# if the xxhdpi doesn't exist.
+PRODUCT_AAPT_CONFIG := normal hdpi xhdpi xxhdpi
+PRODUCT_AAPT_PREF_CONFIG := xxhdpi
+
 TARGET_USES_QCOM_BSP := true
-TARGET_USES_QCA_NFC := other
+TARGET_USES_QCA_NFC := true
 
 ifeq ($(TARGET_USES_QCOM_BSP), true)
 # Add QC Video Enhancements flag
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 endif #TARGET_USES_QCOM_BSP
-
-#TARGET_DISABLE_DASH := true
-#TARGET_DISABLE_OMX_SECURE_TEST_APP := true
 
 # media_profiles and media_codecs xmls for 8974
 ifeq ($(TARGET_ENABLE_QC_AV_ENHANCEMENTS), true)
@@ -27,10 +38,15 @@ PRODUCT_COPY_FILES += \
     device/xiaomi/cancro/mixer_paths.xml:system/etc/mixer_paths.xml \
     device/xiaomi/cancro/mixer_paths_auxpcm.xml:system/etc/mixer_paths_auxpcm.xml
 
+
 PRODUCT_PACKAGES += \
     libqcomvisualizer \
     libqcomvoiceprocessing \
     libqcompostprocbundle
+
+#camera
+PRODUCT_PACKAGES += \
+    camera.msm8974
 
 # Feature definition files for 8974
 PRODUCT_COPY_FILES += \
@@ -49,16 +65,21 @@ PRODUCT_PACKAGES += \
     battery_shutdown
 
 #fstab.qcom
-PRODUCT_PACKAGES += fstab.qcom
+PRODUCT_PACKAGES += \
+    fstab.qcom \
+    ueventd.cancro.rc
 
 #wlan driver
 PRODUCT_COPY_FILES += \
-    device/xiaomi/cancro/WCNSS_qcom_cfg.ini:system/etc/wifi/WCNSS_qcom_cfg.ini \
-    device/xiaomi/cancro/WCNSS_qcom_wlan_nv.bin:persist/WCNSS_qcom_wlan_nv.bin
+    kernel/xiaomi/cancro/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
+    kernel/xiaomi/cancro/drivers/staging/prima/firmware_bin/WCNSS_qcom_cfg.ini:system/etc/firmware/wlan/prima/WCNSS_qcom_cfg.ini
 
 PRODUCT_PACKAGES += \
     wpa_supplicant_overlay.conf \
-    p2p_supplicant_overlay.conf
+    p2p_supplicant_overlay.conf \
+    WCNSS_qcom_wlan_nv.bin \
+    WCNSS_qcom_wlan_nv_x4.bin \
+    WCNSS_qcom_wlan_nv_x4lte.bin
 
 PRODUCT_PACKAGES += wcnss_service
 
@@ -83,9 +104,17 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     camera2.portability.force_api=1
 
+# Debuggable by default
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.service.adb.enable=1 \
+    persist.service.debuggable=1 \
+    persist.sys.usb.config=mtp,adb \
+    ro.build.selinux=1 \
+    ro.sf.lcd_density=480 \
+    ro.secure=0
+
 PRODUCT_COPY_FILES += \
     device/xiaomi/cancro/whitelist_appops.xml:system/etc/whitelist_appops.xml
-
 
 # NFC packages
 ifeq ($(TARGET_USES_QCA_NFC),true)
@@ -130,8 +159,6 @@ PRODUCT_BOOT_JARS += qcmediaplayer
 ifneq ($(strip $(QCPATH)),)
 PRODUCT_BOOT_JARS += WfdCommon
 PRODUCT_BOOT_JARS += qcom.fmradio
-#PRODUCT_BOOT_JARS += security-bridge
-#PRODUCT_BOOT_JARS += qsb-port
 PRODUCT_BOOT_JARS += oem-services
 PRODUCT_BOOT_JARS += com.qti.dpmframework
 PRODUCT_BOOT_JARS += dpmapi

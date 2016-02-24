@@ -37,9 +37,6 @@ on init
     # session is not exercised through RemoteDisplay in the android framework
     setprop persist.sys.wfd.virtual 0
 
-on post-fs
-    export LD_PRELOAD libNimsWrap.so
-
 on fs
     mount_all fstab.qcom
 
@@ -68,6 +65,53 @@ on post-fs-data
     mkdir /tombstones/dsps 0771 system system
     mkdir /data/usf 0700 system system
 
+    # [throttle_freq, throttle_temp, unthrottle_temp]
+    write /sys/kernel/msm_thermal/low_thresh "1574400 45 43"
+    write /sys/kernel/msm_thermal/mid_thresh "1267200 50 47"
+    write /sys/kernel/msm_thermal/high_thresh "1190400 55 53"
+    write /sys/kernel/msm_thermal/sampling_ms 10000
+    write /sys/kernel/msm_thermal/enabled 1
+
+    # Torch
+    chown system camera /sys/class/leds/torch-light/brightness
+    chmod 0660 /sys/class/leds/torch-light/brightness
+
+    # Vibrator permissions
+    chown system system /sys/vibrator/pwmvalue
+    chmod 0644 /sys/vibrator/pwmvalue
+
+    # Dynamic FPS
+    chown system graphics /sys/class/graphics/fb0/dynamic_fps
+    chmod 0664 /sys/class/graphics/fb0/dynamic_fps
+
+    #  KeyDisabler
+    chown root system /sys/bus/i2c/drivers/atmel_mxt_ts/2-004a/keys_off
+    chmod 0664 /sys/bus/i2c/drivers/atmel_mxt_ts/2-004a/keys_off
+    chown root system /sys/bus/i2c/drivers/atmel_mxt_ts_640t/2-004b/keys_off
+    chmod 0664 /sys/bus/i2c/drivers/atmel_mxt_ts_640t/2-004b/keys_off
+
+    # Enable writing to led blink node from userspace
+    chown system system /sys/class/leds/button-backlight/brightness
+    chown system system /sys/class/leds/button-backlight1/brightness
+    chown system system /sys/class/leds/red/blink
+    chown system system /sys/class/leds/red/duty_pcts
+    chown system system /sys/class/leds/red/ramp_step_ms
+    chown system system /sys/class/leds/green/blink
+    chown system system /sys/class/leds/green/duty_pcts
+    chown system system /sys/class/leds/green/ramp_step_ms
+    chown system system /sys/class/leds/blue/blink
+    chown system system /sys/class/leds/blue/duty_pcts
+    chown system system /sys/class/leds/blue/ramp_step_ms
+
+    chown system system /sys/class/graphics/fb0/aco
+    chown system system /sys/class/graphics/fb0/cabc
+    chown system system /sys/class/graphics/fb0/rgb
+    chown system system /sys/class/graphics/fb0/sre
+    chmod 0664 /sys/class/graphics/fb0/aco
+    chmod 0664 /sys/class/graphics/fb0/cabc
+    chmod 0664 /sys/class/graphics/fb0/rgb
+    chmod 0664 /sys/class/graphics/fb0/sre
+
 on boot
     insmod /system/lib/modules/adsprpc.ko
 # access permission for secure touch
@@ -79,6 +123,14 @@ on boot
     chmod 0440 /sys/devices/f9924000.i2c/i2c-2/2-004a/secure_touch
     chown system drmrpc /sys/devices/f9924000.i2c/i2c-2/2-004a/secure_touch_enable
     chown system drmrpc /sys/devices/f9924000.i2c/i2c-2/2-004a/secure_touch
+
+    exec /system/bin/sh  /system/bin/set_sensorprop.sh
+    class_start core
+
+    write /sys/bus/msm_subsys/devices/subsys0/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys1/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys2/restart_level related
+    write /sys/bus/msm_subsys/devices/subsys3/restart_level related
 
 # Allow usb charging to be disabled persistently
 on property:persist.usb.chgdisabled=1
@@ -293,3 +345,9 @@ service ml_daemon /system/bin/ml_daemon
     class core
     user root
     group root
+
+service sensorservice /system/bin/sensorservice
+    class main
+    user root
+    group root
+    disabled

@@ -43,6 +43,14 @@ LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
 include $(BUILD_PREBUILT)
 
 include $(CLEAR_VARS)
+LOCAL_MODULE       := ueventd.cancro.rc
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_MODULE_PATH  := $(TARGET_ROOT_OUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
 LOCAL_MODULE       := gpio-keys.kl
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
@@ -132,14 +140,55 @@ LOCAL_MODULE_PATH  := $(TARGET_OUT_ETC)/hostapd
 LOCAL_SRC_FILES    := hostapd.deny
 include $(BUILD_PREBUILT)
 
-#Create symbolic links
-$(shell mkdir -p $(TARGET_OUT_ETC)/firmware/wlan/prima; \
-	ln -sf /persist/WCNSS_qcom_wlan_nv.bin \
-	$(TARGET_OUT_ETC)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin; \
-	ln -sf /data/misc/wifi/WCNSS_qcom_cfg.ini \
-	$(TARGET_OUT_ETC)/firmware/wlan/prima/WCNSS_qcom_cfg.ini)
+include $(CLEAR_VARS)
+LOCAL_MODULE       := WCNSS_qcom_wlan_nv.bin
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_MODULE_PATH  := $(TARGET_OUT_ETC)/firmware/wlan/prima
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := WCNSS_qcom_wlan_nv_x4.bin
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_MODULE_PATH  := $(TARGET_OUT_ETC)/firmware/wlan/prima
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := WCNSS_qcom_wlan_nv_x4lte.bin
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_MODULE_PATH  := $(TARGET_OUT_ETC)/firmware/wlan/prima
+include $(BUILD_PREBUILT)
+
+# Make a symlink for WiFi firmware
+SYMLINKS := $(TARGET_OUT_ETC)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
+$(SYMLINKS): WIFI_FW := WCNSS_qcom_wlan_nv_x4.bin
+$(SYMLINKS): $(LOCAL_INSTALLED_MODULE) $(LOCAL_PATH)/Android.mk
+	@echo "Symlink: $@ -> $(WIFI_FW)"
+	$(hide) ln -sf $(WIFI_FW) $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(SYMLINKS)
+
+# We need this so that the installed files could be picked up based on the
+# local module name
+ALL_MODULES.$(LOCAL_MODULE).INSTALLED := \
+    $(ALL_MODULES.$(LOCAL_MODULE).INSTALLED) $(SYMLINKS)
+
+# Make a symlink for WiFi firmware
+SYMLINKS := $(TARGET_OUT_ETC)/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin
+$(SYMLINKS): WIFI_FW := WCNSS_qcom_wlan_nv_x4lte.bin
+$(SYMLINKS): $(LOCAL_INSTALLED_MODULE) $(LOCAL_PATH)/Android.mk
+	@echo "Symlink: $@ -> $(WIFI_FW)"
+	$(hide) ln -sf $(WIFI_FW) $@
+
+ALL_DEFAULT_INSTALLED_MODULES += $(SYMLINKS)
 
 endif
+
 #----------------------------------------------------------------------
 # Radio image
 #----------------------------------------------------------------------

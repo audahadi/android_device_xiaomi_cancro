@@ -719,6 +719,10 @@
         <ctl name="COMP0 Switch" value="1" />
     </path>
 
+    <path name="speaker-and-anc-headphones-cdp">
+        <path name="speaker-and-anc-headphones-fluid" />
+    </path>
+
     <path name="speaker-and-anc-headphones-DB">
         <path name="anc-headphones" />
         <ctl name="RX3 MIX1 INP1" value="RX1" />
