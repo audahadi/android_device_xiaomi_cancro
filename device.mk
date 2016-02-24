@@ -67,7 +67,7 @@ PRODUCT_PACKAGES += \
 #fstab.qcom
 PRODUCT_PACKAGES += \
     fstab.qcom \
-    ueventd.cancro.rc
+    init.rc
 
 #wlan driver
 PRODUCT_COPY_FILES += \
