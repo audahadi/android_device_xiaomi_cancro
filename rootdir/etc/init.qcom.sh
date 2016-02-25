@@ -42,15 +42,20 @@ start_sensors()
         chmod -h 775 /data/misc/sensors
         mkdir -p /persist/misc/sensors
         chmod 775 /persist/misc/sensors
+        mkdir -p /persist/sensors
+        chmod 775 /persist/sensors
 
         touch /persist/misc/sensors/settings
+        touch /persist/sensors/settings
         chmod -h 664 /data/system/sensors/settings
         chown -h system /persist/misc/sensors/settings
+        chown -h system /persist/sensors/settings 
 
         if [ ! -s /persist/misc/sensors/settings ]; then
             # If the settings file is empty, enable sensors HAL
             # Otherwise leave the file with it's current contents
             echo 1 > /persist/misc/sensors/settings
+            echo 1 > /persist/sensors/settings
         fi
         start sensors
     fi
