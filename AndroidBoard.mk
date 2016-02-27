@@ -38,7 +38,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := gpio-keys.kl
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/gpio-keys.kl
 LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
 include $(BUILD_PREBUILT)
 
@@ -46,7 +46,15 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := atmel_mxt_ts.kl
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/atmel_mxt_ts.kl
+LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := atmel-maxtouch.kl
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/atmel-maxtouch.kl
 LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
 include $(BUILD_PREBUILT)
 
@@ -54,7 +62,39 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := synaptics_rmi4_i2c.kl
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-LOCAL_SRC_FILES    := $(LOCAL_MODULE)
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/synaptics_rmi4_i2c.kl
+LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := cyttsp_button
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/cyttsp_button.kl
+LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := fts.kl
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/fts.kl
+LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := msm8974-taiko-mtp-snd-card_Button_Jack.kl
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/msm8974-taiko-mtp-snd-card_Button_Jack.kl
+LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
+include $(BUILD_PREBUILT)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE       := synaptics_dsx.kl
+LOCAL_MODULE_TAGS  := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_SRC_FILES    := $(LOCAL_PATH)/keylayout/usr/synaptics_dsx.kl
 LOCAL_MODULE_PATH  := $(TARGET_OUT_KEYLAYOUT)
 include $(BUILD_PREBUILT)
 

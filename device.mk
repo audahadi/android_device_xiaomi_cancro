@@ -79,6 +79,13 @@ PRODUCT_PACKAGES += \
     fstab.qcom \
     init.recovery.hardware
 
+#keylayout
+PRODUCT_PACKAGES += \
+    cyttsp_button.kl \
+    fts.kl \
+    msm8974-taiko-mtp-snd-card_Button_Jack.kl \
+    synaptics_dsx.kl
+
 #wlan driver
 PRODUCT_COPY_FILES += \
     kernel/xiaomi/cancro/drivers/staging/prima/firmware_bin/WCNSS_cfg.dat:system/etc/firmware/wlan/prima/WCNSS_cfg.dat \
