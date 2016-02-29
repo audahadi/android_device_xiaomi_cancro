@@ -17,7 +17,8 @@ persist.sys.ssr.restart_level=3
 persist.radio.ramdump_sdcard=1
 DEVICE_PROVISIONED=1
 # Start in global mode
-ro.telephony.default_network=10
+#ro.telephony.default_network=10
+persist.radio.primarycard=true
 
 debug.sf.hw=1
 debug.egl.hw=1

@@ -79,12 +79,23 @@ PRODUCT_PACKAGES += \
     fstab.qcom \
     init.recovery.hardware
 
+#thermal-engine
+PRODUCT_PACKAGES +=device/xiaomi/cancro/config/thermal-engine-8974.conf:system/etc/thermal-engine-8974.conf
+
+#gps
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/gps/gps.conf:system/etc/gps.conf \
+    $(LOCAL_PATH)/gps/flp.conf:system/etc/flp.conf \
+    $(LOCAL_PATH)/gps/izat.conf:system/etc/izat.conf \
+    $(LOCAL_PATH)/gps/quipc.conf:system/etc/quipc.conf \
+    $(LOCAL_PATH)/gps/sap.conf:system/etc/sap.conf
+
 #keylayout
 PRODUCT_PACKAGES += \
-    cyttsp_button.kl \
-    fts.kl \
-    msm8974-taiko-mtp-snd-card_Button_Jack.kl \
-    synaptics_dsx.kl
+	cyttsp_button.kl \
+	fts.kl \
+	msm8974-taiko-mtp-snd-card_Button_Jack.kl \
+	synaptics_dsx.kl
 
 #wlan driver
 PRODUCT_COPY_FILES += \
