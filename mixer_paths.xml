@@ -9,7 +9,7 @@
     <ctl name="Voice Tx Mute" id="2" value="500" />
     <ctl name="Voice Rx Gain" id="0" value="0" />
     <ctl name="Voice Rx Gain" id="1" value="-1" />
-    <ctl name="Voice Rx Gain" id="2" value="20" />
+    <ctl name="Voice Rx Gain" id="2" value="25" />
     <ctl name="Voip Tx Mute" id="0" value="0" />
     <ctl name="Voip Tx Mute" id="1" value="500" />
     <ctl name="Voip Rx Gain" id="0" value="0" />
@@ -26,13 +26,13 @@
     <ctl name="LINEOUT4 Volume" value="12" />
     <ctl name="HPHL Volume" value="20" />
     <ctl name="HPHR Volume" value="20" />
-    <ctl name="RX1 Digital Volume" value="84" />
-    <ctl name="RX2 Digital Volume" value="84" />
-    <ctl name="RX3 Digital Volume" value="84" />
-    <ctl name="RX4 Digital Volume" value="84" />
-    <ctl name="RX5 Digital Volume" value="84" />
-    <ctl name="RX6 Digital Volume" value="84" />
-    <ctl name="RX7 Digital Volume" value="84" />
+    <ctl name="RX1 Digital Volume" value="82" />
+    <ctl name="RX2 Digital Volume" value="82" />
+    <ctl name="RX3 Digital Volume" value="82" />
+    <ctl name="RX4 Digital Volume" value="82" />
+    <ctl name="RX5 Digital Volume" value="82" />
+    <ctl name="RX6 Digital Volume" value="82" />
+    <ctl name="RX7 Digital Volume" value="82" />
     <ctl name="ADC1 Volume" value="12" />
     <ctl name="ADC2 Volume" value="12" />
     <ctl name="ADC3 Volume" value="12" />

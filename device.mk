@@ -79,6 +79,10 @@ PRODUCT_PACKAGES += \
     fstab.qcom \
     init.recovery.hardware
 
+# Charger
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/sbin/chargeonlymode:root/sbin/chargeonlymode
+
 #thermal-engine
 PRODUCT_PACKAGES +=device/xiaomi/cancro/config/thermal-engine-8974.conf:system/etc/thermal-engine-8974.conf
 
@@ -89,6 +93,9 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/gps/izat.conf:system/etc/izat.conf \
     $(LOCAL_PATH)/gps/quipc.conf:system/etc/quipc.conf \
     $(LOCAL_PATH)/gps/sap.conf:system/etc/sap.conf
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.gps.agps_provider=1
 
 #keylayout
 PRODUCT_PACKAGES += \
@@ -139,6 +146,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp,adb \
     ro.build.selinux=1 \
     ro.secure=0
+
+#mpdecission
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.extension_library=libqti-perfd-client.so
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/whitelist_appops.xml:system/etc/whitelist_appops.xml
