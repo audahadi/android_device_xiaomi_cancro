@@ -1,0 +1,26 @@
+From a0493784f639e7d6d9c9d391632f0ff9b02db12f Mon Sep 17 00:00:00 2001
+From: Shahan <shahan.mike13@gmail.com>
+Date: Sat, 19 Dec 2015 08:22:08 +0530
+Subject: [PATCH] Frameworks: Fix hw menu key from unlocking on swipe
+
+this fixes the menu capacitive key unlocking the swipe lockscreen when pressed.
+---
+ .../src/com/android/systemui/statusbar/phone/PhoneStatusBar.java        | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
+index 99ae851..d74ace9 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
+@@ -4630,7 +4630,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
+     }
+ 
+     public boolean onMenuPressed() {
+-        return mState == StatusBarState.KEYGUARD && mStatusBarKeyguardViewManager.onMenuPressed();
++       return mState == StatusBarState.KEYGUARD && mStatusBarKeyguardViewManager.isSecure();
+     }
+ 
+     public void endAffordanceLaunch() {
+-- 
+2.5.0
+
